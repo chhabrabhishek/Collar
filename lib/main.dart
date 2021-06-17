@@ -25,6 +25,8 @@ class LocationApp extends StatefulWidget {
 
 class _LocationAppState extends State<LocationApp> {
   var locationMessage = "0,0";
+  var currentTempCelsius = "0";
+  var currentTempFar = "0";
   Location location = new Location();
   WeatherFactory wf = new WeatherFactory("0a2fb214733a302c10a81d35b165ee99",
       language: Language.DANISH);
@@ -42,8 +44,6 @@ class _LocationAppState extends State<LocationApp> {
     LocationData _locationData;
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
-
-    location.enableBackgroundMode(enable: true);
 
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -65,21 +65,25 @@ class _LocationAppState extends State<LocationApp> {
       }
     }
 
+    location.enableBackgroundMode(enable: true);
+
     _locationData = await location.getLocation();
-
-    Weather currentWeather = await wf.currentWeatherByLocation(
-        _locationData.latitude!.toDouble(),
-        _locationData.longitude!.toDouble());
-
-    var currentTempCelsius = currentWeather.temperature!.celsius;
-    var currentTempFar = currentWeather.temperature!.fahrenheit;
-
 
     setState(() {
       locationMessage = "${_locationData.latitude}, ${_locationData.longitude}";
       http.get(Uri.parse(
           'http://192.168.29.233:5000/produce?lat=${_locationData.latitude}&long=${_locationData.longitude}'));
     });
+
+    Weather currentWeather = await wf.currentWeatherByLocation(
+        _locationData.latitude!.toDouble(),
+        _locationData.longitude!.toDouble());
+
+    setState(() {
+      currentTempCelsius = currentWeather.temperature!.celsius!.toDouble().toStringAsFixed(2);
+      currentTempFar = currentWeather.temperature!.fahrenheit!.toDouble().toStringAsFixed(2);
+    });
+
   }
 
   @override
@@ -103,7 +107,8 @@ class _LocationAppState extends State<LocationApp> {
           SizedBox(
             height: 20.0,
           ),
-          Text("Current Position $locationMessage")
+          Text("Current Position $locationMessage"),
+          Text("Current Temperature $currentTempCelsius ° Celsius , $currentTempFar ° Fahrenheit")
         ],
       )),
     );
