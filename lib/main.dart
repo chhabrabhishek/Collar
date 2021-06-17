@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
-import 'package:twilio_flutter/twilio_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:weather/weather.dart';
 
@@ -25,7 +24,6 @@ class LocationApp extends StatefulWidget {
 }
 
 class _LocationAppState extends State<LocationApp> {
-  late TwilioFlutter twilioFlutter;
   var locationMessage = "0,0";
   Location location = new Location();
   WeatherFactory wf = new WeatherFactory("0a2fb214733a302c10a81d35b165ee99",
@@ -75,7 +73,7 @@ class _LocationAppState extends State<LocationApp> {
 
     var currentTempCelsius = currentWeather.temperature!.celsius;
     var currentTempFar = currentWeather.temperature!.fahrenheit;
-    
+
 
     setState(() {
       locationMessage = "${_locationData.latitude}, ${_locationData.longitude}";
