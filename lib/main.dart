@@ -37,7 +37,7 @@ class _LocationAppState extends State<LocationApp> {
     super.initState();
     getCurrentLocation();
     timer = Timer.periodic(
-        Duration(seconds: 10), (Timer t) => getCurrentLocation());
+        Duration(seconds: 2), (Timer t) => getCurrentLocation());
   }
 
   void getCurrentLocation() async {
@@ -71,13 +71,14 @@ class _LocationAppState extends State<LocationApp> {
 
     setState(() {
       locationMessage = "${_locationData.latitude}, ${_locationData.longitude}";
-      http.get(Uri.parse(
-          'http://192.168.29.233:5000/produce?lat=${_locationData.latitude}&long=${_locationData.longitude}'));
     });
 
     Weather currentWeather = await wf.currentWeatherByLocation(
         _locationData.latitude!.toDouble(),
         _locationData.longitude!.toDouble());
+
+    http.get(Uri.parse(
+        'http://producer-quick-crocodile-ah.eu-gb.mybluemix.net/produce?lat=${_locationData.latitude}&long=${_locationData.longitude}&temp=${currentWeather.temperature!.fahrenheit!}'));
 
     setState(() {
       currentTempCelsius = currentWeather.temperature!.celsius!.toDouble().toStringAsFixed(2);
